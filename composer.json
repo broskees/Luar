@@ -4,7 +4,7 @@
     "type": "library",
     "version": "0.1.5",
     "require": {
-        "php": "^8.1",
+        "php": "^8.0",
         "antlr/antlr4-php-runtime": "^0.9.1",
         "ext-json": "*"
     },
@@ -31,6 +31,7 @@
     },
     "scripts": {
         "test:unit": "phpunit -c tests/phpunit.xml",
-        "docs:generate": "phpdoc-md"
+        "docs:generate": "phpdoc-md",
+        "parser:generate": "bash scripts/regenerate-parser.sh"
     }
 }

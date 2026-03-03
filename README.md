@@ -10,7 +10,19 @@ Luar implements a reduced version of Lua and also packages some essential Lua li
 
 ## Installation
 ```
-composer require raudius/luar
+composer require broskees/luar
+```
+
+## Requirements
+
+- PHP `^8.0`
+
+## Development
+
+Regenerate parser artifacts after grammar changes:
+
+```bash
+composer parser:generate
 ```
 
 ## Usage
@@ -33,4 +45,3 @@ $program = '
 
 $greeting = $luar->eval($program);
 ```
-
