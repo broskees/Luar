@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <phpunit
-    verbose="true"
-    convertDeprecationsToExceptions="true"
     timeoutForSmallTests="900"
     timeoutForMediumTests="900"
     timeoutForLargeTests="900"
 >
+    <php>
+        <ini name="memory_limit" value="512M" />
+    </php>
     <testsuite name='Luar App Tests'>
         <directory suffix='Test.php'>.</directory>
     </testsuite>

@@ -246,6 +246,11 @@ abstract class LuarExpressionVisitor extends LuarBaseVisitor {
 			throw new LuarRuntimeException('Exponent calculations must be performed on numeric values', $context);
 		}
 
+		// PHP 8.4 deprecated 0 ** negative exponent; handle explicitly per Lua spec (returns INF)
+		if ($v1 == 0 && $v2 < 0) {
+			return new Literal(INF);
+		}
+
 		return new Literal($v1 ** $v2);
 	}
 

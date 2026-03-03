@@ -1,11 +1,11 @@
 <?php
 
 /*
- * Generated from Lua.g4 by ANTLR 4.9.3
+ * Generated from Lua.g4 by ANTLR 4.13.2
  */
 
-namespace Raudius\Luar\Parser;
 
+namespace Raudius\Luar\Parser;
 use Antlr\Antlr4\Runtime\Tree\ParseTreeVisitor;
 
 /**
