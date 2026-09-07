@@ -263,7 +263,7 @@ class LibString extends Library {
 			}
 
 			$len = $j - $i + 1;
-			return substr($subject, $i-1, $len) ?: '';
+			return substr($subject, $i-1, $len);
 		});
 	}
 
