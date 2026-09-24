@@ -106,4 +106,26 @@ LUA);
 		$this->assertSame($expected, $received['viaCall'], 'A field holding a function-call result must unpack to nested PHP arrays.');
 		$this->assertSame($expected, $received['viaIife'], 'An immediately-invoked closure result must unpack the same way.');
 	}
+
+	/**
+	 * Lua long-bracket strings are raw: no escape sequences are interpreted,
+	 * and only a newline directly after the opening bracket is skipped.
+	 */
+	public function testLongBracketStringsKeepBackslashesRaw(): void {
+		$received = [];
+		$luar = new Luar();
+		$luar->assign('show', function ($s) use (&$received) { $received[] = $s; });
+		$luar->eval(<<<'LUA'
+show([[a\nb — c\\d \"q\" \65]])
+show([==[x\ty]==])
+show([[
+first line after bracket]])
+show("a\nb\65")
+LUA);
+
+		$this->assertSame('a\nb — c\\\\d \"q\" \65', $received[0], 'Backslashes inside [[ ]] must survive untouched.');
+		$this->assertSame('x\ty', $received[1], 'Level-n long brackets are raw too.');
+		$this->assertSame('first line after bracket', $received[2], 'Only the newline right after the opening bracket is dropped.');
+		$this->assertSame("a\nbA", $received[3], 'Quoted strings still interpret escapes.');
+	}
 }

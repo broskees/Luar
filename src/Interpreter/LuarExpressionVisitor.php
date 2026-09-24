@@ -55,6 +55,16 @@ abstract class LuarExpressionVisitor extends LuarBaseVisitor {
 				$offset++;
 			}
 			$str = substr($context->getText(), $offset, -$offset);
+
+			// Long-bracket strings are raw: no escape processing. Lua only
+			// skips a newline that immediately follows the opening bracket.
+			if (str_starts_with($str, "\r\n")) {
+				$str = substr($str, 2);
+			} elseif (str_starts_with($str, "\n")) {
+				$str = substr($str, 1);
+			}
+
+			return new Literal($str);
 		}
 
 		preg_match_all('/\\\\(\\d{1,3})/', $str, $matches, PREG_OFFSET_CAPTURE);
