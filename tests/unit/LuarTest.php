@@ -76,4 +76,34 @@ LUA;
 			}
 		}
 	}
+
+	/**
+	 * A table field whose value is a function-call result is stored as the
+	 * call's ObjectList. PHP callables must still receive plain nested arrays,
+	 * never interpreter wrapper objects.
+	 */
+	public function testPhpCallableReceivesPlainArraysForFieldsAssignedFromFunctionCalls(): void {
+		$received = null;
+		$luar = new Luar();
+		$luar->assign('capture', function ($args) use (&$received) {
+			$received = $args;
+			return 'ok';
+		});
+		$luar->eval(<<<'LUA'
+local function build()
+	local t = {}
+	t['layout'] = 'center'
+	t['count'] = 42
+	t['items'] = {}
+	t['items'][#t['items'] + 1] = { title = 'A' }
+	return t
+end
+capture({ direct = { layout = 'center' }, viaCall = build(), viaIife = (function() return build() end)() })
+LUA);
+
+		$expected = ['layout' => 'center', 'count' => 42, 'items' => [1 => ['title' => 'A']]];
+		$this->assertSame(['layout' => 'center'], $received['direct']);
+		$this->assertSame($expected, $received['viaCall'], 'A field holding a function-call result must unpack to nested PHP arrays.');
+		$this->assertSame($expected, $received['viaIife'], 'An immediately-invoked closure result must unpack the same way.');
+	}
 }

@@ -6,6 +6,7 @@ use Raudius\Luar\Interpreter\LuarObject\Invokable;
 use Raudius\Luar\Interpreter\LuarObject\Literal;
 use Raudius\Luar\Interpreter\LuarObject\LuarObject;
 use Raudius\Luar\Interpreter\LuarObject\ObjectList;
+use Raudius\Luar\Interpreter\LuarObject\Reference;
 use Raudius\Luar\Interpreter\LuarObject\Table;
 use Raudius\Luar\Library\LibCore;
 use Raudius\Luar\Library\LibMath;
@@ -164,6 +165,17 @@ class Luar {
 	 * @return mixed
 	 */
 	public static function unpackLuarObject(LuarObject $object) {
+		// A table field whose value is a function-call result is stored as the
+		// call's ObjectList. Unpack what it holds, not the list wrapper, so a
+		// returned table still becomes a nested PHP array.
+		if ($object instanceof ObjectList) {
+			return self::unpackLuarObject($object->getObject(0));
+		}
+
+		if ($object instanceof Reference) {
+			return self::unpackLuarObject($object->getObject());
+		}
+
 		if ($object instanceof Table) {
 			$table = [];
 			foreach ($object->getValue() as $k => $value) {
@@ -173,6 +185,8 @@ class Luar {
 			return $table;
 		}
 
-		return $object->getValue();
+		$value = $object->getValue();
+
+		return $value instanceof LuarObject ? self::unpackLuarObject($value) : $value;
 	}
 }
